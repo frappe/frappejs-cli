@@ -7,6 +7,7 @@ const logger = require('./logger');
 const frappeConf = 'frappe.conf.js';
 
 function getAppDir() {
+  console.trace();
   let dir = process.cwd();
 
   if (fs.existsSync(path.join(dir, frappeConf))) {

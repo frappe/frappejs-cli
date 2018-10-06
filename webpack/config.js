@@ -13,10 +13,9 @@ const plugins = {
     FriendlyErrors: require('friendly-errors-webpack-plugin'),
 }
 
-const appConfig = getAppConfig();
-const isProduction = process.env.NODE_ENV === 'production';
-
 function getConfig() {
+    const appConfig = getAppConfig();
+    const isProduction = process.env.NODE_ENV === 'production';
     const config = {
         mode: isProduction ? 'production' : 'development',
         context: resolveAppDir(),

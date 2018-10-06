@@ -10,10 +10,8 @@ const getWebpackConfig = require('./config');
 const log = logger('serve');
 const warn = logger('serve', 'red');
 
-const appConfig = getAppConfig();
-const webpackConfig = getWebpackConfig();
-
 function addWebpackMiddleware(app) {
+    const webpackConfig = getWebpackConfig();
     log();
     log('Starting dev server...');
 
@@ -31,6 +29,8 @@ function addWebpackMiddleware(app) {
 }
 
 function startWebpackDevServer() {
+    const appConfig = getAppConfig();
+    const webpackConfig = getWebpackConfig();
     log();
     log('Starting dev server...');
 
@@ -51,6 +51,7 @@ function startWebpackDevServer() {
 }
 
 function addWebpackEntryPoints(webpackConfig, forDevServer) {
+    const webpackConfig = getWebpackConfig();
     const devServerEntryPoints = [
         resolveAppDir('node_modules/webpack-dev-server/client/index.js') + '?http://localhost',
         'webpack/hot/dev-server'
