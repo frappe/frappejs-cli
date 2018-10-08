@@ -1,19 +1,35 @@
 const inquirer = require('inquirer');
 const fs = require('fs');
 const details = require('./modelDetails');
-const { exec } = require('child_process');
+const { spawn } = require('child_process');
+const chalk = require('chalk');
+const logger = require('../webpack/logger');
 
 module.exports = {
     createNewApp: function(name) {
-        exec(`git clone https://github.com/anto-christo/frappejs-boilerplate ${name}`, (err, stdout, stderr) => {
-        if (err) {
-            console.log(err);
-            return;
-        }
-
-        // the *entire* stdout and stderr (buffered)
-        console.log(`stdout: ${stdout}`);
-        console.log(`stderr: ${stderr}`);
+        log = logger('boilerplate', 'yellow')
+        log('Initializing FrappeJS application.....');
+        clone = spawn('git', ['clone', 'https://github.com/anto-christo/frappejs-boilerplate', name]);
+        clone.stdout.on('data', function (data) {
+            console.log(data.toString());
+        });
+        clone.stderr.on('data', function (data) {
+            console.log(data.toString());
+        });
+        clone.on('exit', function (code) {
+            log(`${chalk.green('Application initialized successfully !!')}\n`);
+            log('Installing dependencies, this may take a few minutes.....');
+            dir = process.cwd();
+            yarn = spawn('yarn', [],{ cwd: `${dir}/${name}/` });
+            yarn.stdout.on('data', function (data) {
+                console.log(data.toString());
+            });
+            yarn.stderr.on('data', function (data) {
+                console.log(data.toString());
+            });
+            yarn.on('exit', function (code) {
+                log(`${chalk.green('Dependencies installed successfully !!')}`);
+            });
         });
     },
     
