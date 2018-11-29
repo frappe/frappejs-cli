@@ -7,7 +7,7 @@
   "author": "anto-christo <anto.christo.20@gmail.com>",
   "license": "MIT",
   "bin": {
-    "frappe": "cli.js"
+    "frappe": "scripts/index.js"
   },
   "dependencies": {
     "case-sensitive-paths-webpack-plugin": "^2.1.2",

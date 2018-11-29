@@ -1,5 +1,5 @@
 const webpack = require('webpack');
-const { getConfig, getElectronMainConfig } = require('./config');
+const { getConfig, getElectronMainConfig } = require('../webpack/config');
 
 module.exports = function build(mode) {
   const rendererConfig = getConfig();

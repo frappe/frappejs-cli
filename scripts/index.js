@@ -2,8 +2,8 @@
 
 const program = require('commander');
 const process = require('process');
-const package = require('./package.json');
-const boilerplate = require('./model/boilerplate');
+const package = require('../package.json');
+const boilerplate = require('./commands/boilerplate');
 
 program
     .version(package.version)
@@ -11,12 +11,12 @@ program
 program
     .command('start [mode]')
     .description('Start development server')
-    .action(require('./webpack/start'))
+    .action(require('./commands/start'))
 
 program
     .command('build [mode]')
     .description('Build assets for production')
-    .action(require('./webpack/build'))
+    .action(require('./commands/build'))
 
 program
     .command('create-model <name>')

@@ -3,7 +3,7 @@ const fs = require('fs');
 const ask = require('./prompt');
 const { spawn } = require('child_process');
 const chalk = require('chalk');
-const logger = require('../webpack/logger');
+const logger = require('../utils/logger');
 const log = logger('boilerplate', 'yellow')
 
 module.exports = {

@@ -7,9 +7,9 @@ const CaseSensitivePathsWebpackPlugin = require('case-sensitive-paths-webpack-pl
 const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
-const { getAppConfig, resolveAppDir } = require('./utils');
+const { getAppConfig, resolveAppDir } = require('../utils/utils');
 const appDependencies = require(resolveAppDir('./package.json')).dependencies;
-const frappeDependencies = require('../package.json').dependencies;
+const frappeDependencies = require('../../package.json').dependencies;
 
 let getConfig, getElectronMainConfig;
 
