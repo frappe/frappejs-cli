@@ -4,10 +4,11 @@ const ask = require('./prompt');
 const { spawn } = require('child_process');
 const chalk = require('chalk');
 const logger = require('../utils/logger');
-const log = logger('boilerplate', 'yellow')
+const log = logger('boilerplate', 'yellow');
+const { resolveAppDir } = require('../utils/utils');
 
 module.exports = {
-    createNewApp: function(name) {
+    newApp: function(name) {
         log(`${chalk.blue('Creating new FrappeJS application.....')}`);
         clone = spawn('git', ['clone', 'https://github.com/anto-christo/frappejs-boilerplate', name]);
         clone.stdout.on('data', function (data) {
@@ -18,8 +19,7 @@ module.exports = {
             if(code) {
                 log(`${chalk.red('The process stopped unexpectedly with error code: '+code)}`);
             } else {
-                dir = process.cwd();
-                packageJSON = require(`${dir}/${name}/package.json`);
+                packageJSON = require(resolveAppDir(`./${name}/package.json`));
                 console.log('Enter application details:');
                 inquirer.prompt(ask.appDetails).then(async answers => {
                     packageJSON.name = name;
@@ -28,10 +28,10 @@ module.exports = {
                     packageJSON.author = answers.author;
                     packageJSON.repository = answers.repository;
                     packageJSON.license = answers.license;
-                    fs.writeFileSync(`${dir}/${name}/package.json`, JSON.stringify(packageJSON));
+                    fs.writeFileSync(resolveAppDir(`./${name}/package.json`), JSON.stringify(packageJSON));
                     log(`${chalk.green('Application created successfully !!')}`);
                     log(`${chalk.blue('Installing dependencies, this may take a while.....')}`);
-                    yarn = spawn('yarn', [],{ cwd: `${dir}/${name}/` });
+                    yarn = spawn('yarn', [],{ cwd: resolveAppDir(`./${name}/`) });
                     yarn.stdout.on('data', function (data) {
                         data = data.toString();
                         if(data.startsWith('[')) {
@@ -57,7 +57,7 @@ module.exports = {
         });
     },
     
-    createNewModel: function(name) {
+    newModel: function(name) {
         var obj = {};
         obj['name'] = name;
         inquirer.prompt(ask.modelDetails).then(async answers => {
@@ -131,8 +131,8 @@ module.exports = {
                     keywordFields.push(answer.option);
                     await askKeywordFields(keywordFields);
                 } else {
-                    fs.mkdirSync(`./models/doctype/${name}`);
-                    fs.writeFileSync(`./models/doctype/${name}/${name}.js`, 'module.exports = '+JSON.stringify(obj));
+                    fs.mkdirSync(resolveAppDir(`./models/doctype/${name}`));
+                    fs.writeFileSync(resolveAppDir(`./models/doctype/${name}/${name}.js`), 'module.exports = '+JSON.stringify(obj));
                     log(`${chalk.green('Model created successfully !!')}`);
                     return;
                 }

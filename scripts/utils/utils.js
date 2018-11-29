@@ -6,20 +6,20 @@ const logger = require('./logger');
 
 const frappeConf = 'frappe.conf.js';
 
-function getAppDir() {
-  let dir = process.cwd();
-
-  if (fs.existsSync(path.join(dir, frappeConf))) {
-    return dir;
+function isValidDir() {
+  if (fs.existsSync(path.join(getAppDir(), frappeConf))) {
+    return true;
   }
-
   warn = logger('utils', 'red')
-
   warn();
   warn(`Looks like this is not the root of a FrappeJS project`);
   warn(`Please run this command from a folder which contains ${chalk.yellow(frappeConf)} file`);
   warn();
   process.exit(1);
+}
+
+function getAppDir() {
+  return process.cwd();
 }
 
 function getAppConfig() {
@@ -38,6 +38,7 @@ function resolveAppDir(...args) {
 }
 
 module.exports = {
+  isValidDir,
   getAppDir,
   getAppConfig,
   resolveAppDir

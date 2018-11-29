@@ -1,9 +1,9 @@
 const { spawn } = require('child_process');
 const { startWebpackDevServer } = require('../webpack/serve');
 const { getAppConfig, resolveAppDir } = require('../utils/utils');
-const appConfig = getAppConfig();
 
 module.exports = function start(mode) {
+  const appConfig = getAppConfig();
   process.env.NODE_ENV = 'development';
 
   if (mode === 'electron') {

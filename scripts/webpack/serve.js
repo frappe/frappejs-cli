@@ -5,18 +5,15 @@ const webpackHotMiddleware = require('webpack-hot-middleware');
 
 const logger = require('../utils/logger');
 const { getAppConfig, resolveAppDir } = require('../utils/utils');
-const { getConfig: getWebpackConfig } = require('./config');
 
 const log = logger('serve');
 const warn = logger('serve', 'red');
 
-const appConfig = getAppConfig();
-const webpackConfig = getWebpackConfig();
-
 function addWebpackMiddleware(app) {
     log();
     log('Starting dev server...');
-
+    const { getConfig: getWebpackConfig } = require('./config');
+    const webpackConfig = getWebpackConfig();
     addWebpackEntryPoints(webpackConfig);
     const compiler = webpack(webpackConfig);
 
@@ -35,6 +32,9 @@ function startWebpackDevServer() {
     log('Starting dev server...');
 
     return new Promise(resolve => {
+        const { getConfig: getWebpackConfig } = require('./config');
+        const appConfig = getAppConfig();
+        const webpackConfig = getWebpackConfig();
         addWebpackEntryPoints(webpackConfig, true);
         const compiler = webpack(webpackConfig);
         const server = new webpackDevServer(compiler, webpackConfig.devServer);

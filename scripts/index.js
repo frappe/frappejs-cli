@@ -3,7 +3,14 @@
 const program = require('commander');
 const process = require('process');
 const package = require('../package.json');
-const boilerplate = require('./commands/boilerplate');
+const create = require('./commands/create');
+const { isValidDir } = require('./utils/utils');
+
+(function init() {
+    if (process.argv[2] !== 'create-app') {
+        isValidDir();
+    }
+})();
 
 program
     .version(package.version)
@@ -22,14 +29,14 @@ program
     .command('create-model <name>')
     .description('Create a new model in the `models/doctype` folder')
     .action((name) => {
-        boilerplate.createNewModel(name);
+        create.newModel(name);
     });
 
 program
     .command('create-app <name>')
     .description('Create a frappejs app')
     .action((name) => {
-        boilerplate.createNewApp(name);
+        create.newApp(name);
     });
 
 program.parse(process.argv);
