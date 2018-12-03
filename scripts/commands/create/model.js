@@ -1,63 +1,13 @@
-const inquirer = require('inquirer');
 const fs = require('fs');
-const ask = require('./prompt');
-const { spawn } = require('child_process');
+const inquirer = require('inquirer');
+const ask = require('./prompts/modelDetails');
+const { resolveAppDir } = require('../../utils/utils');
 const chalk = require('chalk');
-const logger = require('../utils/logger');
+const logger = require('../../utils/logger');
 const log = logger('boilerplate', 'yellow');
-const { resolveAppDir } = require('../utils/utils');
 
 module.exports = {
-    newApp: function(name) {
-        log(`${chalk.blue('Creating new FrappeJS application.....')}`);
-        clone = spawn('git', ['clone', 'https://github.com/anto-christo/frappejs-boilerplate', name]);
-        clone.stdout.on('data', function (data) {
-        });
-        clone.stderr.on('data', function (data) {
-        });
-        clone.on('exit', function (code) {
-            if(code) {
-                log(`${chalk.red('The process stopped unexpectedly with error code: '+code)}`);
-            } else {
-                packageJSON = require(resolveAppDir(`./${name}/package.json`));
-                console.log('Enter application details:');
-                inquirer.prompt(ask.appDetails).then(async answers => {
-                    packageJSON.name = name;
-                    packageJSON.version = answers.version;
-                    packageJSON.description = answers.description;
-                    packageJSON.author = answers.author;
-                    packageJSON.repository = answers.repository;
-                    packageJSON.license = answers.license;
-                    fs.writeFileSync(resolveAppDir(`./${name}/package.json`), JSON.stringify(packageJSON));
-                    log(`${chalk.green('Application created successfully !!')}`);
-                    log(`${chalk.blue('Installing dependencies, this may take a while.....')}`);
-                    yarn = spawn('yarn', [],{ cwd: resolveAppDir(`./${name}/`) });
-                    yarn.stdout.on('data', function (data) {
-                        data = data.toString();
-                        if(data.startsWith('[')) {
-                            console.log(data.toString());
-                        }                    
-                    });
-                    yarn.stderr.on('data', function (data) {
-                        data = data.toString();
-                        if(data.startsWith('[')) {
-                            console.log(data.toString());
-                        }                   
-                    });
-                    yarn.on('exit', function (code) {
-                        if(code) {
-                            log(`${chalk.red('The process stopped unexpectedly with error code: '+code)}`);
-                        } else {
-                            log(`${chalk.green('Dependencies installed successfully')}`);
-                            log(`${chalk.blue('Run ')+ chalk.yellow('frappe start ')+ chalk.blue('at the root of new project to start the application in development server')}`);
-                        }
-                    });
-                });
-            }
-        });
-    },
-    
-    newModel: function(name) {
+    newModel: async function(name) {
         var obj = {};
         obj['name'] = name;
         inquirer.prompt(ask.modelDetails).then(async answers => {

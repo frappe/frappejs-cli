@@ -1,37 +1,4 @@
 module.exports = {
-    appDetails: [
-        {
-            type: 'input',
-            name: 'version',
-            message: 'Version',
-            default: '1.0.0'
-        },
-        {
-            type: 'input',
-            name: 'description',
-            message: 'Description',
-            default: ''
-        },
-        {
-            type: 'input',
-            name: 'author',
-            message: 'Author',
-            default: ''
-        },
-        {
-            type: 'input',
-            name: 'repository',
-            message: 'Repository',
-            default: ''
-        },
-        {
-            type: 'input',
-            name: 'license',
-            message: 'License',
-            default: 'MIT'
-        }
-    ],
-
     modelDetails: [
         {
             type: 'input',

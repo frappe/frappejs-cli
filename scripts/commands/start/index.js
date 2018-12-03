@@ -1,6 +1,6 @@
 const { spawn } = require('child_process');
-const { startWebpackDevServer } = require('../webpack/serve');
-const { getAppConfig, resolveAppDir } = require('../utils/utils');
+const { startWebpackDevServer } = require('../../webpack/serve');
+const { getAppConfig, resolveAppDir } = require('../../utils/utils');
 
 module.exports = function start(mode) {
   const appConfig = getAppConfig();
