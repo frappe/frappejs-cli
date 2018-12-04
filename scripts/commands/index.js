@@ -5,9 +5,10 @@ const build = require('./build');
 
 module.exports = {
     newApp: async function(name) {
+        await app.checkIfExists(name);
         await app.askPreferences();
-        await app.cloneBoilerplate(name);
-        await app.installDependencies(name);
+        await app.cloneBoilerplate();
+        await app.installDependencies();
     },
     
     newModel: function(name) {

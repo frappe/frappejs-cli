@@ -2,7 +2,7 @@ const fs = require('fs');
 const path = require('path');
 const chalk = require('chalk');
 const deepmerge = require('deepmerge');
-const logger = require('./logger');
+const { logger } = require('./logger');
 
 const frappeConf = 'frappe.conf.js';
 

@@ -3,7 +3,7 @@ const webpackDevServer = require('webpack-dev-server');
 const webpackDevMiddleware = require('webpack-dev-middleware');
 const webpackHotMiddleware = require('webpack-hot-middleware');
 
-const logger = require('../utils/logger');
+const { logger } = require('../utils/logger');
 const { getAppConfig, resolveAppDir } = require('../utils/utils');
 
 const log = logger('serve');

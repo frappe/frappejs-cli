@@ -28,6 +28,7 @@ program
     .action((mode) => {
         run.buildApp(mode);
     });
+    
 program
     .command('create-model <name>')
     .description('Create a new model in the `models/doctype` folder')

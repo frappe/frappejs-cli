@@ -3,8 +3,8 @@ const inquirer = require('inquirer');
 const ask = require('./prompts/modelDetails');
 const { resolveAppDir } = require('../../utils/utils');
 const chalk = require('chalk');
-const logger = require('../../utils/logger');
-const log = logger('boilerplate', 'yellow');
+const { logger } = require('../../utils/logger');
+const log = logger('cli', 'yellow');
 
 module.exports = {
     newModel: async function(name) {

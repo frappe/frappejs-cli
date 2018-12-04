@@ -1,10 +1,13 @@
 const { exec } = require('child_process');
+const fs = require('fs');
 const inquirer = require('inquirer');
-const { resolveAppDir } = require('../../utils/utils');
-const ask = require('./prompts/setupDetails');
 const chalk = require('chalk');
-const logger = require('../../utils/logger');
-const log = logger('boilerplate', 'yellow');
+const { resolveAppDir } = require('../../utils/utils');
+const details = require('./prompts/setupDetails');
+const { logger, clear } = require('../../utils/logger');
+const log = logger('cli', 'yellow');
+
+let appName = undefined;
 
 const boilerplateURLs = {
     'Blank Frontend': 'https://github.com/anto-christo/frappejs-boilerplate',
@@ -18,34 +21,35 @@ let prefer = {
     packageManager: undefined
 }
 
-async function askBoilerplate() {
+async function ask(question) {
+    clear();
     return new Promise((resolve) => {
-        inquirer.prompt(ask.boilerplate).then(async response => {
-            prefer.boilerplate = response.boilerplate;
-            resolve();
-        });
-    });
-}
-
-function askPackageManager() {
-    return new Promise((resolve) => {
-        inquirer.prompt(ask.packageManager).then(async response => {
-            prefer.packageManager = response.packageManager;
+        inquirer.prompt(details[question]).then(async response => {
+            prefer[question] = response[question];
             resolve();
         });
     });
 }
 
 module.exports = {
-    askPreferences: async function() {
-        await askBoilerplate();
-        await askPackageManager();
+    checkIfExists: async function(name) {
+        appName = name;
+        if (fs.existsSync(resolveAppDir(`./${name}`))) {
+            log(`${chalk.red(`App with name ${name} already exists in the current directory`)}`);
+            process.exit(1);
+        }
     },
 
-    cloneBoilerplate: async function(name) {
+    askPreferences: async function() {
+        await ask('boilerplate');
+        await ask('packageManager');
+    },
+
+    cloneBoilerplate: async function() {
+        clear();
         const url = boilerplateURLs[prefer.boilerplate];
         return new Promise((resolve) => {
-            exec(`git clone ${url} ${name}`, (error, stdout, stderr) => {
+            exec(`git clone ${url} ${appName}`, (error, stdout, stderr) => {
                 if (error) {
                     console.error(`exec error: ${error}`);
                     return;
@@ -56,7 +60,7 @@ module.exports = {
         })
     },
 
-    installDependencies: async function(name) {
+    installDependencies: async function() {
         let installCommand;
         if (prefer.packageManager === 'Skip this step') {
             installCommand = undefined;
@@ -66,7 +70,7 @@ module.exports = {
             installCommand = prefer.packageManager === 'NPM' ? 'npm i' : 'yarn';
             return new Promise((resolve) => {
                 log(`${chalk.blue('Installing dependencies, this may take a while.....')}`);
-                exec(installCommand, { cwd: resolveAppDir(`./${name}`) }, (error, stdout, stderr) => {
+                exec(installCommand, { cwd: resolveAppDir(`./${appName}`) }, (error, stdout, stderr) => {
                     if (error) {
                         console.error(`exec error: ${error}`);
                         return;
