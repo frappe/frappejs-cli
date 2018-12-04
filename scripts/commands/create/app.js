@@ -2,12 +2,13 @@ const { exec } = require('child_process');
 const fs = require('fs');
 const inquirer = require('inquirer');
 const chalk = require('chalk');
+const ora = require('ora');
 const { resolveAppDir } = require('../../utils/utils');
 const details = require('./prompts/setupDetails');
-const { logger, clear } = require('../../utils/logger');
-const log = logger('cli', 'yellow');
+const { logger, clear, instruct } = require('../../utils/logger');
+const error = logger('\n\nerror', 'red');
 
-let appName = undefined;
+let appName = undefined, appSpinner, depSpinner;
 
 const boilerplateURLs = {
     'Blank Frontend': 'https://github.com/anto-christo/frappejs-boilerplate',
@@ -31,11 +32,29 @@ async function ask(question) {
     });
 }
 
+async function startDepInstall(installCommand) {
+    depSpinner = ora('Installing dependencies').start();
+    return new Promise((resolve) => {
+        exec(installCommand, { cwd: resolveAppDir(`./${appName}`) }, (error, stdout, stderr) => {
+            if (error) {
+                depSpinner.fail();
+                error(chalk.red(error));
+                return;
+            }
+            depSpinner.succeed();
+            ora('Setup complete').succeed();
+            instruct(`$ cd ${appName}|$ frappe start`);
+            resolve();
+        });
+    });
+}
+
 module.exports = {
     checkIfExists: async function(name) {
+        clear();
         appName = name;
         if (fs.existsSync(resolveAppDir(`./${name}`))) {
-            log(`${chalk.red(`App with name ${name} already exists in the current directory`)}`);
+            error(chalk.red(`App with name ${name} already exists in the current directory`));
             process.exit(1);
         }
     },
@@ -48,38 +67,28 @@ module.exports = {
     cloneBoilerplate: async function() {
         clear();
         const url = boilerplateURLs[prefer.boilerplate];
+        appSpinner = ora('Creating the application').start();
         return new Promise((resolve) => {
             exec(`git clone ${url} ${appName}`, (error, stdout, stderr) => {
                 if (error) {
-                    console.error(`exec error: ${error}`);
+                    appSpinner.fail();
+                    error(chalk.red(error));
                     return;
                 }
-                log(`${chalk.green('Application created successfully !!')}`);
+                appSpinner.succeed();
                 resolve();
             });
         })
     },
 
     installDependencies: async function() {
-        let installCommand;
         if (prefer.packageManager === 'Skip this step') {
-            installCommand = undefined;
-            log(`${chalk.red('Installation of dependencies skipped')}`);
-            log(`${chalk.blue('Install dependencies before running application')}`);
+            ora('Dependencies not installed').warn();
+            ora('Setup complete').succeed();
+            instruct(`$ cd ${appName}|Install dependencies|$ frappe start`);
         } else {
-            installCommand = prefer.packageManager === 'NPM' ? 'npm i' : 'yarn';
-            return new Promise((resolve) => {
-                log(`${chalk.blue('Installing dependencies, this may take a while.....')}`);
-                exec(installCommand, { cwd: resolveAppDir(`./${appName}`) }, (error, stdout, stderr) => {
-                    if (error) {
-                        console.error(`exec error: ${error}`);
-                        return;
-                    }
-                    log(`${chalk.green('Dependencies installed successfully')}`);
-                    log(`${chalk.blue('Run ')+ chalk.yellow('frappe start ')+ chalk.blue('at the root of new project to start the application in development server')}`);
-                    resolve();
-                });
-            });
+            const installCommand = prefer.packageManager === 'NPM' ? 'npm i' : 'yarn';
+            await startDepInstall(installCommand);
         }
     }
 }
