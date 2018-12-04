@@ -7,13 +7,13 @@ const { logger } = require('./logger');
 const frappeConf = 'frappe.conf.js';
 
 function isValidDir() {
-  if (fs.existsSync(path.join(getAppDir(), frappeConf))) {
+  if (fs.existsSync(path.join(getAppDir(), frappeConf)) && fs.existsSync(path.join(getAppDir(), 'package.json'))) {
     return true;
   }
   warn = logger('utils', 'red')
   warn();
   warn(`Looks like this is not the root of a FrappeJS project`);
-  warn(`Please run this command from a folder which contains ${chalk.yellow(frappeConf)} file`);
+  warn(`Please run this command from a folder which contains ${chalk.yellow(frappeConf)} and ${chalk.yellow('package.json')} file`);
   warn();
   process.exit(1);
 }

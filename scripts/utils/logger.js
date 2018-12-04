@@ -1,9 +1,16 @@
 const ms = require('ms');
 const chalk = require('chalk');
 const cfonts = require('cfonts');
-const cliClear = require("cli-clear");
+const readline = require('readline');
 
 let prevTime;
+
+function clearConsole() {
+    const blank = '\n'.repeat(process.stdout.rows);
+    console.log(blank);
+    readline.cursorTo(process.stdout, 0, 0);
+    readline.clearScreenDown(process.stdout);
+}
 
 function showHeader() {
     cfonts.say('FrappeJS', {
@@ -29,7 +36,7 @@ module.exports = {
     },
 	  
     clear: function() {
-        cliClear();
+        clearConsole();
         showHeader();
     },
 

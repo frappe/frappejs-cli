@@ -51,7 +51,6 @@ async function startDepInstall(installCommand) {
 
 module.exports = {
     checkIfExists: async function(name) {
-        clear();
         appName = name;
         if (fs.existsSync(resolveAppDir(`./${name}`))) {
             error(chalk.red(`App with name ${name} already exists in the current directory`));
