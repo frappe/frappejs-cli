@@ -10,6 +10,16 @@ module.exports = {
         ]
     },
 
+    targetPlatform: {
+        type: 'list',
+        name: 'targetPlatform',
+        message: 'Select a target platform for your app: ',
+        choices: [
+            'Web',
+            'Electron'
+        ]
+    },
+
     packageManager: {
         type: 'list',
         name: 'packageManager',

@@ -18,7 +18,7 @@ const boilerplateURLs = {
 
 let prefer = {
     boilerplate: undefined,
-    electronSupport: false,
+    targetPlatform: undefined,
     packageManager: undefined
 }
 
@@ -35,15 +35,15 @@ async function ask(question) {
 async function startDepInstall(installCommand) {
     depSpinner = ora('Installing dependencies').start();
     return new Promise((resolve) => {
-        exec(installCommand, { cwd: resolveAppDir(`./${appName}`) }, (error, stdout, stderr) => {
-            if (error) {
+        exec(installCommand, { cwd: resolveAppDir(`./${appName}`) }, (errorMsg) => {
+            if (errorMsg) {
                 depSpinner.fail();
-                error(chalk.red(error));
+                error(chalk.red(errorMsg));
                 return;
             }
             depSpinner.succeed();
             ora('Setup complete').succeed();
-            instruct(`$ cd ${appName}|$ frappe start`);
+            instruct(`$ cd ${appName}|$ frappe start [mode]`);
             resolve();
         });
     });
@@ -60,18 +60,20 @@ module.exports = {
 
     askPreferences: async function() {
         await ask('boilerplate');
+        await ask('targetPlatform');
         await ask('packageManager');
     },
 
     cloneBoilerplate: async function() {
         clear();
         const url = boilerplateURLs[prefer.boilerplate];
+        const branch = prefer.targetPlatform === 'Electron' ? 'electron' : 'master';
         appSpinner = ora('Creating the application').start();
         return new Promise((resolve) => {
-            exec(`git clone ${url} ${appName}`, (error, stdout, stderr) => {
-                if (error) {
+            exec(`git clone -b ${branch} --single-branch ${url} ${appName}`, (errorMsg) => {
+                if (errorMsg) {
                     appSpinner.fail();
-                    error(chalk.red(error));
+                    error(chalk.red(errorMsg));
                     return;
                 }
                 appSpinner.succeed();
@@ -84,7 +86,7 @@ module.exports = {
         if (prefer.packageManager === 'Skip this step') {
             ora('Dependencies not installed').warn();
             ora('Setup complete').succeed();
-            instruct(`$ cd ${appName}|Install dependencies|$ frappe start`);
+            instruct(`$ cd ${appName}|Install dependencies|$ frappe start [mode]`);
         } else {
             const installCommand = prefer.packageManager === 'NPM' ? 'npm i' : 'yarn';
             await startDepInstall(installCommand);
