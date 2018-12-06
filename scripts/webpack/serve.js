@@ -1,36 +1,10 @@
 const webpack = require('webpack');
 const webpackDevServer = require('webpack-dev-server');
-const webpackDevMiddleware = require('webpack-dev-middleware');
-const webpackHotMiddleware = require('webpack-hot-middleware');
 
 const { logger } = require('../utils/logger');
-const { getAppConfig, resolveAppDir } = require('../utils/utils');
-
-const log = logger('serve');
-const warn = logger('serve', 'red');
-
-function addWebpackMiddleware(app) {
-    log();
-    log('Starting dev server...');
-    const { getConfig: getWebpackConfig } = require('./config');
-    const webpackConfig = getWebpackConfig();
-    addWebpackEntryPoints(webpackConfig);
-    const compiler = webpack(webpackConfig);
-
-    app.use(webpackDevMiddleware(compiler, {
-        logLevel: 'silent',
-        publicPath: webpackConfig.output.publicPath
-    }));
-
-    app.use(webpackHotMiddleware(compiler, {
-        path: '/__webpack_hmr'
-    }));
-}
+const { getAppConfig } = require('../utils/utils');
 
 function startWebpackDevServer() {
-    log();
-    log('Starting dev server...');
-
     return new Promise(resolve => {
         const { getConfig: getWebpackConfig } = require('./config');
         const appConfig = getAppConfig();
@@ -42,7 +16,6 @@ function startWebpackDevServer() {
         const { devServerHost, devServerPort } = appConfig.dev;
         server.listen(devServerPort, devServerHost, () => {
             // listening on devServerPort
-
             compiler.hooks.done.tap('webpack done compiling', function() {
                 resolve(server);
             });
@@ -52,7 +25,6 @@ function startWebpackDevServer() {
 
 function addWebpackEntryPoints(webpackConfig, forDevServer) {
     const devServerEntryPoints = [
-        // resolveAppDir('node_modules/webpack-dev-server/client/index.js') + '?http://localhost',
         'webpack-dev-server/client/index.js?http://localhost',
         'webpack/hot/dev-server'
     ];
@@ -68,6 +40,5 @@ function addWebpackEntryPoints(webpackConfig, forDevServer) {
 }
 
 module.exports = {
-    addWebpackMiddleware,
     startWebpackDevServer
 }

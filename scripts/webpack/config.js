@@ -8,6 +8,7 @@ const FriendlyErrorsWebpackPlugin = require('friendly-errors-webpack-plugin');
 const CopyWebpackPlugin = require('copy-webpack-plugin');
 
 const { getAppConfig, resolveAppDir } = require('../utils/utils');
+const { progress } = require('../utils/logger');
 const appDependencies = require(resolveAppDir('./package.json')).dependencies;
 const frappeDependencies = require(resolveAppDir('./node_modules/frappejs/package.json')).dependencies;
 
@@ -104,12 +105,7 @@ function makeConfig() {
         new CaseSensitivePathsWebpackPlugin(),
         new webpack.NamedModulesPlugin(),
         new webpack.HotModuleReplacementPlugin(),
-        new FriendlyErrorsWebpackPlugin({
-          compilationSuccessInfo: {
-            messages: [`FrappeJS server started at http://${appConfig.dev.devServerHost}:${appConfig.dev.devServerPort}`],
-          },
-        }),
-        new webpack.ProgressPlugin(),
+        new webpack.ProgressPlugin(progress),
         isProduction ? new CopyWebpackPlugin([
           {
             from: resolveAppDir(appConfig.staticPath),

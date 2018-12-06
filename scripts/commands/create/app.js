@@ -5,7 +5,7 @@ const chalk = require('chalk');
 const ora = require('ora');
 const { resolveAppDir } = require('../../utils/utils');
 const details = require('./prompts/setupDetails');
-const { logger, clear, instruct } = require('../../utils/logger');
+const { logger, clear, display } = require('../../utils/logger');
 const error = logger('\n\nerror', 'red');
 
 let appName = undefined, appSpinner, depSpinner;
@@ -43,7 +43,7 @@ async function startDepInstall(installCommand) {
             }
             depSpinner.succeed();
             ora('Setup complete').succeed();
-            instruct(`$ cd ${appName}|$ frappe start [mode]`);
+            display(`$ cd ${appName}|$ frappe start [mode]`);
             resolve();
         });
     });
@@ -86,7 +86,7 @@ module.exports = {
         if (prefer.packageManager === 'Skip this step') {
             ora('Dependencies not installed').warn();
             ora('Setup complete').succeed();
-            instruct(`$ cd ${appName}|Install dependencies|$ frappe start [mode]`);
+            display(`$ cd ${appName}|Install dependencies|$ frappe start [mode]`);
         } else {
             const installCommand = prefer.packageManager === 'NPM' ? 'npm i' : 'yarn';
             await startDepInstall(installCommand);

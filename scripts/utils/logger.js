@@ -2,6 +2,14 @@ const ms = require('ms');
 const chalk = require('chalk');
 const cfonts = require('cfonts');
 const readline = require('readline');
+const cliProgress = require('cli-progress');
+
+const progressBar = new cliProgress.Bar({
+    format: chalk.green(' {bar}') + ' {percentage}%',
+    align: 'center',
+    stopOnComplete: true,
+    barsize: 60
+}, cliProgress.Presets.shades_classic);
 
 let prevTime;
 
@@ -40,12 +48,18 @@ module.exports = {
         showHeader();
     },
 
-    instruct: function(instruction) {
+    display: function(instruction) {
         cfonts.say(instruction, {
             font: 'console',
             align: 'center',
             colors: ['cyanBright'],
             lineHeight: 1
         });
-    }
+    },
+
+    progress: function(percentage) {
+        progressBar.update(Math.ceil(percentage*100));
+    },
+
+    progressBar
 }
