@@ -6,14 +6,14 @@ const ora = require('ora');
 const { resolveAppDir } = require('../../utils/utils');
 const details = require('./prompts/setupDetails');
 const { logger, clear, display } = require('../../utils/logger');
-const error = logger('\n\nerror', 'red');
+const error = logger('\nError:\n', 'red');
 
 let appName = undefined, appSpinner, depSpinner;
 
 const boilerplateURLs = {
-    'Blank Frontend': 'https://github.com/anto-christo/frappejs-boilerplate',
-    'VueJS Frontend': 'https://github.com/anto-christo/frappejs-todomvc',
-    'Only Server': 'https://github.com/anto-christo/frappejs-boilerplate'
+    'Blank': 'https://github.com/anto-christo/frappejs-boilerplate',
+    'VueJS': 'https://github.com/anto-christo/frappejs-todomvc',
+    'Server': 'https://github.com/anto-christo/frappejs-boilerplate'
 }
 
 let prefer = {
@@ -43,10 +43,14 @@ async function startDepInstall(installCommand) {
             }
             depSpinner.succeed();
             ora('Setup complete').succeed();
-            display(`$ cd ${appName}|$ frappe start [mode]`);
+            display(`$ cd ${appName}|$ frappe start ${execMode()}`);
             resolve();
         });
     });
+}
+
+function execMode() {
+    return prefer.targetPlatform === 'Electron' ? 'electron' : '';
 }
 
 module.exports = {
@@ -68,7 +72,7 @@ module.exports = {
         clear();
         const url = boilerplateURLs[prefer.boilerplate];
         const branch = prefer.targetPlatform === 'Electron' ? 'electron' : 'master';
-        appSpinner = ora('Creating the application').start();
+        appSpinner = ora('Creating application').start();
         return new Promise((resolve) => {
             exec(`git clone -b ${branch} --single-branch ${url} ${appName}`, (errorMsg) => {
                 if (errorMsg) {
@@ -86,7 +90,7 @@ module.exports = {
         if (prefer.packageManager === 'Skip this step') {
             ora('Dependencies not installed').warn();
             ora('Setup complete').succeed();
-            display(`$ cd ${appName}|Install dependencies|$ frappe start [mode]`);
+            display(`$ cd ${appName}|Install dependencies|$ frappe start ${execMode()}`);
         } else {
             const installCommand = prefer.packageManager === 'NPM' ? 'npm i' : 'yarn';
             await startDepInstall(installCommand);

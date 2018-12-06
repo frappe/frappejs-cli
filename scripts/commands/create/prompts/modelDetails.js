@@ -3,7 +3,7 @@ module.exports = {
         {
             type: 'input',
             name: 'label',
-            message: 'Enter label name: ',
+            message: 'Enter model label: ',
         },
         {
             type: 'list',

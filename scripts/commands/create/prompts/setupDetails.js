@@ -4,9 +4,9 @@ module.exports = {
         name: 'boilerplate',
         message: 'Select a boilerplate for your app: ',
         choices: [
-            'Blank Frontend',
-            'VueJS Frontend',
-            'Only Server'
+            'Blank',
+            'VueJS',
+            'Server'
         ]
     },
 

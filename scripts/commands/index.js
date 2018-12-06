@@ -11,7 +11,8 @@ module.exports = {
         await app.installDependencies();
     },
     
-    newModel: function(name) {
+    newModel: async function(name) {
+        await model.checkIfExists(name);
         model.newModel(name);
     },
 
