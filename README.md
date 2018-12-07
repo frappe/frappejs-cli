@@ -2,6 +2,11 @@
 
 > A Command Line Interface for quickly building apps with [FrappeJS](https://frappe.io/frappejs).
 
+<p align="middle">
+    <img src="https://github.com/frappe/frappejs-cli/blob/master/img/new-app.gif" width="430" height="310"/>
+    <img src="https://github.com/frappe/frappejs-cli/blob/master/img/start-electron.gif" width="430" height="310"/>
+</p>
+
 ### Installation 
 
     npm i -g https://github.com/frappe/frappejs-cli  
