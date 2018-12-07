@@ -42,7 +42,7 @@ async function startDepInstall(installCommand) {
                 return;
             }
             depSpinner.succeed();
-            ora('Setup complete').succeed();
+            ora('Application created successfully !!').succeed();
             display(`$ cd ${appName}|$ frappe start ${execMode()}`);
             resolve();
         });
@@ -89,7 +89,7 @@ module.exports = {
     installDependencies: async function() {
         if (prefer.packageManager === 'Skip this step') {
             ora('Dependencies not installed').warn();
-            ora('Setup complete').succeed();
+            ora('Application created successfully !!').succeed();
             display(`$ cd ${appName}|Install dependencies|$ frappe start ${execMode()}`);
         } else {
             const installCommand = prefer.packageManager === 'NPM' ? 'npm i' : 'yarn';
