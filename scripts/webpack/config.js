@@ -146,6 +146,7 @@ function makeConfig() {
 
   getElectronMainConfig = function getElectronMainConfig() {
     return {
+      mode: isProduction ? 'production' : 'development',
       entry: {
         main: resolveAppDir(appConfig.electron.paths.main)
       },
