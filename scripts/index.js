@@ -37,10 +37,10 @@ program
     });
 
 program
-    .command('create-app <name>')
+    .command('create-app <name> [url]')
     .description('Create a frappejs app')
-    .action((name) => {
-        run.newApp(name);
+    .action((name, url) => {
+        run.newApp(name, url);
     });
 
 program.parse(process.argv);

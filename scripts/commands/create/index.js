@@ -8,7 +8,7 @@ const details = require('./prompts/setupDetails');
 const { logger, clear, display } = require('../../utils/logger');
 const error = logger('\nError:\n', 'red');
 
-let appName = undefined, appSpinner, depSpinner;
+let appName = null, appSpinner, depSpinner;
 
 const boilerplateURLs = {
     'Blank': 'https://github.com/anto-christo/frappejs-boilerplate',
@@ -17,9 +17,9 @@ const boilerplateURLs = {
 }
 
 let prefer = {
-    boilerplate: undefined,
-    targetPlatform: undefined,
-    packageManager: undefined
+    boilerplate: null,
+    targetPlatform: null,
+    packageManager: null
 }
 
 async function ask(question) {
@@ -30,6 +30,39 @@ async function ask(question) {
             resolve();
         });
     });
+}
+
+async function startClone(cloneCommand) {
+    return new Promise((resolve) => {
+        exec(cloneCommand, async (errorMsg) => {
+            if (errorMsg) {
+                appSpinner.fail();
+                error(chalk.red(errorMsg));
+                return;
+            }
+            await modifyPackageJson();
+            appSpinner.succeed();
+            resolve();
+        });
+    });
+}
+
+function execMode() {
+    return prefer.targetPlatform === 'Electron' ? 'electron' : '';
+}
+
+async function modifyPackageJson() {
+    return new Promise((resolve) => {
+        fs.readFile(resolveAppDir(`./${appName}/package.json`), function(err, data) {
+            if (err) {
+                error(chalk.red(err));
+            }
+            let packageJson = JSON.parse(data);
+            packageJson.name = appName;
+            fs.writeFileSync(resolveAppDir(`./${appName}/package.json`), JSON.stringify(packageJson, null, 4));
+            resolve();
+        });
+    })
 }
 
 async function startDepInstall(installCommand) {
@@ -49,10 +82,6 @@ async function startDepInstall(installCommand) {
     });
 }
 
-function execMode() {
-    return prefer.targetPlatform === 'Electron' ? 'electron' : '';
-}
-
 module.exports = {
     checkIfExists: async function(name) {
         appName = name;
@@ -60,6 +89,13 @@ module.exports = {
             error(chalk.red(`App with name ${name} already exists in the current directory`));
             process.exit(1);
         }
+    },
+
+    cloneUrl: async function(appName, url) {
+        await ask('packageManager');
+        clear();
+        appSpinner = ora('Creating application').start();
+        await startClone(`git clone ${url} ${appName}`);
     },
 
     askPreferences: async function() {
@@ -73,17 +109,7 @@ module.exports = {
         const url = boilerplateURLs[prefer.boilerplate];
         const branch = prefer.targetPlatform === 'Electron' ? 'electron' : 'master';
         appSpinner = ora('Creating application').start();
-        return new Promise((resolve) => {
-            exec(`git clone -b ${branch} --single-branch ${url} ${appName}`, (errorMsg) => {
-                if (errorMsg) {
-                    appSpinner.fail();
-                    error(chalk.red(errorMsg));
-                    return;
-                }
-                appSpinner.succeed();
-                resolve();
-            });
-        })
+        await startClone(`git clone -b ${branch} --single-branch ${url} ${appName}`);
     },
 
     installDependencies: async function() {
