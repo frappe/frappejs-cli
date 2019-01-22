@@ -3,7 +3,7 @@ const inquirer = require('inquirer');
 const chalk = require('chalk');
 const ora = require('ora');
 const details = require('./prompts/modelDetails');
-const { resolveAppDir } = require('../../utils/utils');
+const { resolveAppDir, slugify } = require('../../utils/utils');
 const { clear, logger } = require('../../utils/logger');
 const error = logger('\nError:\n', 'red');
 
@@ -13,29 +13,34 @@ async function askField() {
     clear();
     console.log(chalk.cyan('(Press enter to skip and move to next step)'));
     inquirer.prompt(details.fieldName).then(async answer => {
-        if(answer.fieldname != '') {
-            await askFieldDetails(answer.fieldname);
+        let fieldName = answer.fieldName;
+        if(fieldName != '') {
+            fieldName = slugify(fieldName);
+            await askFieldDetails(fieldName);
         } else {
             clear();
-            await askKeywordFields(model.keywordFields);
+            await askTitleField();
+            clear();
+            console.log(chalk.cyan('(Press enter to skip and move to next step)'));
+            await askKeywordFields();
         }
     });
 }
 
-async function askFieldDetails(fieldname) {
+async function askFieldDetails(fieldName) {
     inquirer.prompt(details.fieldDetails).then(async answers => {
         fieldObj = {};
-        fieldObj.fieldname = fieldname;
+        fieldObj.fieldname = fieldName;
         fieldObj.label = answers.label;
-        fieldObj.fieldtype = answers.fieldtype;
+        fieldObj.fieldtype = answers.fieldType;
         fieldObj.disabled = answers.disabled;
         fieldObj.required = answers.required;
-        if(answers.fieldtype == 'Select') {
+        if(answers.fieldType == 'Select') {
             fieldObj.options = [];
             await askSelectOptions(fieldObj.options);
-        } else if (answers.fieldtype == 'Link') {
+        } else if (answers.fieldType == 'Link') {
             await askTarget(fieldObj);
-        } else if (answers.fieldtype == 'File') {
+        } else if (answers.fieldType == 'File') {
             await askForDirectory(fieldObj);
         }
         model.fields.push(fieldObj);
@@ -67,18 +72,25 @@ async function askForDirectory(fieldObj) {
     });
 }
 
-async function askKeywordFields(keywordFields) {
-    return inquirer.prompt(details.keywordName).then(async answer => {
-        if(answer.option != '') {
-            keywordFields.push(answer.option);
-            await askKeywordFields(keywordFields);
-        } else {
-            clear();
-            fs.mkdirSync(resolveAppDir(`./models/doctype/${model.name}`));
-            fs.writeFileSync(resolveAppDir(`./models/doctype/${model.name}/${model.name}.js`), 'module.exports = '+JSON.stringify(model, null, 4));
-            ora('Model created successfully !!\n\n').succeed();
-            return;
-        }
+async function askTitleField() {
+    const fieldNames = model.fields.map(field => field.fieldname);
+    details.titleField.choices = fieldNames;
+    return inquirer.prompt(details.titleField).then(async answer => {
+        model['titleField'] = answer.titleField;
+        return;
+    });
+}
+
+async function askKeywordFields() {
+    const fieldNames = model.fields.map(field => field.fieldname);
+    details.keywordFields.choices = fieldNames;
+    return inquirer.prompt(details.keywordFields).then(async answer => {
+        model.keywordFields = answer.keywordFields;
+        clear();
+        fs.mkdirSync(resolveAppDir(`./models/doctype/${model.name}`));
+        fs.writeFileSync(resolveAppDir(`./models/doctype/${model.name}/${model.name}.js`), 'module.exports = '+JSON.stringify(model, null, 4));
+        ora('Model created successfully !!\n\n').succeed();
+        return;
     });
 }
 

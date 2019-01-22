@@ -37,9 +37,16 @@ function resolveAppDir(...args) {
   return path.resolve(getAppDir(), ...args);
 }
 
+function slugify(str) {
+  return str.replace(/(?:^\w|[A-Z]|\b\w)/g, function(letter, index) {
+      return index == 0 ? letter.toLowerCase() : letter.toUpperCase();
+  }).replace(/\s+/g, '');
+}
+
 module.exports = {
   isValidDir,
   getAppDir,
   getAppConfig,
-  resolveAppDir
+  resolveAppDir,
+  slugify
 }

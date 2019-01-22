@@ -35,7 +35,6 @@ module.exports = {
             name: 'label',
             message: 'Enter field label: '
         },
-        
         {
             type: 'confirm',
             name: 'disabled',
@@ -50,7 +49,7 @@ module.exports = {
         },
         {
             type: 'list',
-            name: 'fieldtype',
+            name: 'fieldType',
             message: 'Choose field type: ',
             choices: [
                 'Autocomplete',
@@ -72,17 +71,28 @@ module.exports = {
         }
     ],
 
-    keywordName: {
+    fieldName: {
         type: 'input',
-        name: 'option',
-        message: 'Enter a keyword field: ',
+        name: 'fieldName',
+        message: 'Enter field name: ',
         default: ''
     },
 
-    fieldName: {
-        type: 'input',
-        name: 'fieldname',
-        message: 'Enter field name: ',
+    titleField: {
+        type: 'list',
+        name: 'titleField',
+        message: 'Select a title field: ',
+        choices: [],
+        pageSize: 12,
+        default: ''
+    },
+
+    keywordFields: {
+        type: 'checkbox',
+        name: 'keywordFields',
+        message: 'Select keyword field(s): ',
+        choices: [],
+        pageSize: 12,
         default: ''
     },
 
